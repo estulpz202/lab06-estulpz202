@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
 
 
 /**
- * TODO: 
  * 1. The {@link LinkedIntQueue} has no bugs. We've provided you with some example test cases.
  * Write your own unit tests to test against IntQueue interface with specification testing method 
  * using mQueue = new LinkedIntQueue();
@@ -38,8 +37,8 @@ public class IntQueueTest {
     @Before
     public void setUp() {
         // comment/uncomment these lines to test each class
-        mQueue = new LinkedIntQueue();
-    //    mQueue = new ArrayIntQueue();
+        // mQueue = new LinkedIntQueue();
+        mQueue = new ArrayIntQueue();
 
         testList = new ArrayList<>(List.of(1, 2, 3));
     }
@@ -52,20 +51,23 @@ public class IntQueueTest {
 
     @Test
     public void testNotEmpty() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Write your own unit test
+        mQueue.enqueue(7);
+        assertFalse(mQueue.isEmpty());
     }
 
     @Test
     public void testPeekEmptyQueue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Write your own unit test
+        assertNull(mQueue.peek());
     }
 
     @Test
     public void testPeekNoEmptyQueue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Write your own unit test
+        mQueue.enqueue(7);
+        mQueue.enqueue(77);
+        assertEquals(mQueue.peek(), Integer.valueOf(7));
     }
 
     @Test
@@ -80,8 +82,14 @@ public class IntQueueTest {
 
     @Test
     public void testDequeue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Write your own unit test
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.enqueue(testList.get(i));
+        }
+        for (int i = 0; i < testList.size(); i++) {
+            assertEquals(mQueue.dequeue(), Integer.valueOf(testList.get(i)));
+        }
+        assertNull(mQueue.dequeue());
     }
 
     @Test
@@ -105,5 +113,66 @@ public class IntQueueTest {
         }
     }
 
+    @Test
+    public void testClear() {
+        // Enqueue elements
+        for (int i = 1; i <= 8; i++) {
+            mQueue.enqueue(i);
+        }
 
+        // Call clear() on queue
+        mQueue.clear();
+
+        // Verify queue is empty
+        assertTrue(mQueue.isEmpty());
+        assertEquals(0, mQueue.size());
+        assertNull(mQueue.dequeue());
+    }
+
+    @Test
+    public void testSimpleEnsureCapacity() {
+        // Enqueue elements beyond the initial capacity (10) to trigger resizing
+        for (int i = 1; i <= 15; i++) {
+            mQueue.enqueue(i);
+        }
+
+        // Ensure size is updated correctly
+        assertEquals(15, mQueue.size());
+
+        // Ensure elements are dequeued in the correct order
+        for (int i = 1; i <= 15; i++) {
+            assertEquals(Integer.valueOf(i), mQueue.dequeue());
+        }
+
+        // Ensure queue is empty after all elements are dequeued
+        assertTrue(mQueue.isEmpty());
+        assertNull(mQueue.dequeue());
+    }
+
+    @Test
+    public void testComplexEnsureCapacity() {
+        // Step 1: Fill the queue to capacity to prepare for wrap-around.
+        for (int i = 1; i <= 10; i++) {
+            mQueue.enqueue(i);
+        }
+
+        // Step 2: Dequeue some elements to shift the `head` index forward.
+        for (int i = 1; i <= 5; i++) {
+            assertEquals(Integer.valueOf(i), mQueue.dequeue());
+        }
+
+        // Step 3: Enqueue more elements to wrap around the internal array.
+        for (int i = 11; i <= 20; i++) {
+            mQueue.enqueue(i);
+        }
+
+        // Step 4: Check that all elements are still accessible in the correct order.
+        for (int i = 6; i <= 20; i++) {
+            assertEquals(Integer.valueOf(i), mQueue.dequeue());
+        }
+
+        // Step 5: Ensure queue is empty after all elements are dequeued.
+        assertTrue(mQueue.isEmpty());
+        assertNull(mQueue.dequeue());
+    }
 }

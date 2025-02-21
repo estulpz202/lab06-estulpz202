@@ -7,9 +7,6 @@ import java.util.Arrays;
  * the queue starts out at the head of the array, allowing the queue to grow and
  * shrink in constant time.
  *
- * TODO: This implementation contains three bugs! Use your tests to determine the
- * source of the bugs and correct them!
- *
  * @author Alex Lockwood
  * @author Ye Lu
  */
@@ -73,12 +70,16 @@ public class ArrayIntQueue implements IntQueue {
 
     /** {@inheritDoc} */
     public boolean isEmpty() {
-        return size >= 0;
+        return size == 0;
     }
 
     /** {@inheritDoc} */
     public Integer peek() {
-        return elementData[head];
+        if (isEmpty()) {
+            return null;
+        } else {
+            return elementData[head];
+        }
     }
 
     /** {@inheritDoc} */
@@ -91,17 +92,20 @@ public class ArrayIntQueue implements IntQueue {
      * necessary, to ensure that it can hold at least size + 1 elements.
      */
     private void ensureCapacity() {
+        // If the queue is full, expand capacity
         if (size == elementData.length) {
-            int oldCapacity = elementData.length;
-            int newCapacity = 2 * oldCapacity + 1;
-            int[] newData = new int[newCapacity];
-            for (int i = head; i < oldCapacity; i++) {
-                newData[i - head] = elementData[i];
+            int oldCapacity = elementData.length;  // Store old capacity
+            int newCapacity = 2 * oldCapacity + 1; // Increase capacity by 2x + 1
+            int[] newData = new int[newCapacity];  // Create new larger array
+    
+            // Copy elements in correct order, ensuring FIFO remains
+            for (int i = 0; i < size; i++) {
+                newData[i] = elementData[(head + i) % oldCapacity];
             }
-            for (int i = 0; i < head; i++) {
-                newData[head - i] = elementData[i];
-            }
+    
+            // Update the queue to the new expanded array
             elementData = newData;
+            // Reset head since we copied elements in a new contiguous manner
             head = 0;
         }
     }
